@@ -44,7 +44,7 @@ app.post('/file_on_create' , async (req , res)=>{
     res.status(200).json({ message: await ssh_manager.create_file_ssh(req.body.path, req.body.port_machine)});
 });
 
-// Se recibe una solicitud por cada cambio en un documento FIXME: Para hacerlo más eficiente se tiene que mudar el servicio de manager a la máquina virtual y utilizarlo en conjunto a convergence.
+// Se recibe una solicitud por cada cambio en un documento FIXME: Para hacerlo más eficiente se tiene que mudar el servicio de manager a la máquina virtual y utilizarlo en conjunto a convergence O optimizar el envío de solicitudes del frontend.
 app.post('/file_on_update' , async (req , res)=>{
     res.status(200).json({message: await ssh_manager.update_file_ssh(req.body.id_element, req.body.path,req.body.port_machine)});
 });

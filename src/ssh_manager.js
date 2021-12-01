@@ -123,7 +123,7 @@ async function init_machine(model, id_father, direction, port_machine) //conside
 }      
 
 
-// Controlador de comandos en actualización de archivo
+// Controlador de comandos en actualización de archivo a través de una cola
 let array_update_file = new Array;
 send_update_file_command(1000); 
 
@@ -135,7 +135,7 @@ async function send_update_file_command(milliseconds)
         }
     }, milliseconds)
 }
-//
+//-------------------------------------------------------
 
 
 async function update_file_ssh(id_element, path, port_machine)

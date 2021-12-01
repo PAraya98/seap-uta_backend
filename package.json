@@ -1,0 +1,28 @@
+{
+  "name": "seap-uta_backend",
+  "version": "1.0.0",
+  "description": "Backend del proyecto SEAP-UTA, cuenta con la gestión de máquinas virtuales y el manejo de cuentas de usuario.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PAraya98/seap-uta_backend.git"
+  },
+  "author": "Pedro Araya A.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PAraya98/seap-uta_backend/issues"
+  },
+  "homepage": "https://github.com/PAraya98/seap-uta_backend#readme",
+  "dependencies": {
+    "@convergence/convergence": "^1.0.0-rc.12",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "path": "^0.12.7",
+    "ssh2": "^1.5.0",
+    "ws": "^8.3.0"
+  }
+}

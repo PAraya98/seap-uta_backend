@@ -18,7 +18,7 @@ const connection = mysql.createConnection({
 const bd = makeDb();
 bd.connect(connection);
 
-module.exports = { crear_mv, eliminar_mv, actualizar_uso_mv }
+module.exports = { crear_mv, eliminar_mv, actualizar_uso_mv, get_mv }
 
 async function crear_mv(id, port, id_repositorio)
 {   return new Promise(async resolve => {
@@ -51,5 +51,15 @@ async function actualizar_uso_mv(id_repositorio)
     }
     catch(err)
     {   console.log("Error en la consulta a la base de datos (actualizar_uso_mv): ", err);
+    }
+}
+
+async function get_mv(id_repositorio)
+{   try 
+    {   port_machine = await bd.query(connection, "select port from maquina_virtual inner join repositorio on maquina_virtual.id_repositorio = repositorio.id_repositorio where id_convergence = '"+id_repositorio+"'");
+        return port_machine[0]['port'];
+    } 
+    catch (err) 
+    {   return undefined;   
     }
 }

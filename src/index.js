@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 var path = require('path');
 const config = require('./config');
 const ssh_manager = require('./ssh_manager');
-
+const mv_manager = require('./mv_manager');
 
 
 ///////////////////////////
@@ -32,7 +32,10 @@ app.use((req, res, next) => { //CORS
 //   - RUTAS HTTP -   //
 ///////////////////////
 
-
+/// - RUTA PARA CREAR MV DE UN REPOSITORIO
+app.post('/create_mv', async (req, res) => {
+    //res.status(200).json({ port_machine: await mv_manager.}) TODO: por hacer!!
+});
 
 // - RUTAS PARA MANEJO DE REPOSITORIOS - 
 // FIXME: Agregar JWT web token para identificación de usuario

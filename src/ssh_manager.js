@@ -152,9 +152,6 @@ async function update_file_ssh(id_element, path, port_machine)
                 //then(resolve("file on_update done."));
                 resolve("file on_update done.");
             }
-
-            
-            
         });
     });
 }

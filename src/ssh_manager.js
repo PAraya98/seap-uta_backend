@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
 var path = require('path');
+const bd = require('./bd_query')
 const config = require('./config');
 const { Client } = require('ssh2');
 var Promise = require('promise');
@@ -7,7 +8,8 @@ const convergence = require('@convergence/convergence');
 const domainUrl = config.convergence.domain_url;
 module.exports = {
     exec_ssh_command, delete_element_ssh, rename_element_ssh,
-    init_virtual, update_file_ssh, create_file_ssh, create_folder_ssh
+    init_virtual, update_file_ssh, create_file_ssh, create_folder_ssh,
+    update_use_mv
 }
 
 
@@ -18,10 +20,10 @@ module.exports = {
 
 async function exec_ssh_command(command, port_machine)
 {   return new Promise(resolve => {
-        try {   
+        try {
+            console.log(command, port_machine); 
             const conn = new Client();
             conn.on('ready', () => {
-                console.log(command);
                 conn.exec(command, (err, stream) => {
                     if (err) throw err;
                     stream.on('close', (code, signal) => {
@@ -39,10 +41,10 @@ async function exec_ssh_command(command, port_machine)
                 port: port_machine,
                 username: config.virtual_machine.username,
                 password: config.virtual_machine.password,
-                readyTimeout: 99999 //FIXME: Medida parche para soportar n solicitudes ssh al actualizar un código, se requiere de un buffer 
             })
             conn.on('error', (err) => {
                 conn.errorHandled = true;
+                conn.end();
                 console.log('custom error handler', err);
             });
         } catch (error) {
@@ -51,8 +53,6 @@ async function exec_ssh_command(command, port_machine)
         
     });
 } 
-
-
 
 async function delete_element_ssh(path, port_machine)
 {   return new Promise(async resolve => {
@@ -75,7 +75,9 @@ async function rename_element_ssh(old_dir, new_dir, port_machine)
 /////////////////////////////////////////
 
 async function init_virtual(id_model, port_machine)
-{   return new Promise(resolve => {
+{   console.log("Iniciando máquina virtual... ",id_model, port_machine);
+    await new Promise(resolve => setTimeout(resolve, 2000)); 
+    return new Promise(resolve => {
         convergence.connectAnonymously(domainUrl, "test", {
             webSocket: {
                 factory: (u) => new WebSocket(u, { rejectUnauthorized: false}),
@@ -89,7 +91,7 @@ async function init_virtual(id_model, port_machine)
                 repository_children = model.elementAt(['tree', 'nodes', 'root']).get('children').value();
 
                 init_machine(model, "root", repository_name, port_machine);
-                resolve(await new Promise (resolve => {setTimeout(() => resolve("Ready"), 5000)}));
+                resolve();
             });
         }).catch(err => {
             console.log("error: "+ err);
@@ -148,9 +150,6 @@ async function update_file_ssh(id_element, path, port_machine)
             else
             {   array_update_file[index].command = command;
                 array_update_file[index].port_machine = port_machine;
-                //exec_ssh_command(command, port_machine).
-                //then(resolve("file on_update done."));
-                resolve("file on_update done.");
             }
         });
     });
@@ -192,4 +191,11 @@ async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
         await callback(array[index], index, array);
     }
+}
+
+async function update_use_mv(port_machine, callback)
+{   return new Promise(async resolve => {
+        bd.actualizar_uso_mv(port_machine);
+        resolve(callback);
+    });
 }

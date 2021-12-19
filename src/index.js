@@ -4,6 +4,9 @@ var path = require('path');
 const config = require('./config');
 const ssh_manager = require('./ssh_manager');
 const mv_manager = require('./mv_manager');
+const session_manager = require('./session_manager');
+const repository_manager = require('./repository_manager');
+const { resolveSoa } = require('dns');
 
 
 ///////////////////////////
@@ -32,12 +35,59 @@ app.use((req, res, next) => { //CORS
 //   - RUTAS HTTP -   //
 ///////////////////////
 
-/// - RUTA PARA CREAR MV DE UN REPOSITORIO
-app.post('/create_mv', async (req, res) => {
-    //res.status(200).json({ port_machine: await mv_manager.}) TODO: por hacer!!
-});
+/////////////////////////////////////////////////////////////////////////////////
+// - RUTAS PARA MANEJO DE USUARIOS - 
+app.post('/login', async (req, res) => {
+    res.send(await session_manager.login(req));
+})
 
-// - RUTAS PARA MANEJO DE REPOSITORIOS - 
+app.post('/register', async (req, res) => {
+    res.send(await session_manager.register(req));
+})
+
+app.post('/validate-jwt', async (req, res) => {
+    res.status(200).json(await session_manager.validate(req));
+})
+
+/////////////////////////////////////////////////////////////////////////////////
+// - RUTAS PARA MANEJO DE REPOSITORIOS
+
+app.post('/create_repository', async (req, res) => {
+    res.status(200).json(await repository_manager.crear_repositorio(req));
+})
+
+app.post('/delete_repository', async(req, res) => {
+    res.status(200).json(await repository_manager.eliminar_repositorio(req));
+})
+
+app.post('/repository_list', async (req, res) => {
+    res.send(await repository_manager.lista_repositorios(req));
+})
+
+app.post('/get-rol', async (req, res) => {
+    res.send(await repository_manager.obtener_rol(req));
+})
+
+app.post('/get-members', async (req, res) => {
+    res.send( await repository_manager.listar_miembros(req));
+})
+
+app.post('/add-member', async (req, res) => {
+    res.send( await repository_manager.agregar_miembro(req));
+})
+
+app.post('/remove-member', async (req, res) => {
+    res.send( await repository_manager.eliminar_miembro(req));
+})
+
+app.post('/modify-member', async (req, res) => {
+    res.send( await repository_manager.modificar_miembro(req));
+})
+
+/////////////////////////////////////////////////////////////////////////////////
+// - RUTAS PARA MANEJO DE MÁQUINAS VIRTUAES - 
+
+//TODO: AL AGREGAR JWT TOKEN VERIFICAR SI PERTENECE AL REPOSITORIO, EN CASO CONTRARIO ENVIARLE UN MENSAJE PARA QUE LO SAQUE DEL REPO 
 // FIXME: Agregar JWT web token para identificación de usuario
 app.post('/folder_on_create' , async (req , res)=>{
     res.status(200).json({ message: await ssh_manager.update_use_mv(req.body.port_machine, ssh_manager.create_folder_ssh(req.body.path, req.body.port_machine))});
@@ -62,10 +112,11 @@ app.post('/element_on_delete' , async (req , res)=>{
 });
 
 app.post('/repository_on_open' , async(req, res) =>{
-    res.status(200).json({message: await mv_manager.create_mv(req.body.repository_id, req.body.name)});
+    res.status(200).json({message: await mv_manager.create_mv(req)});
 });
-
 
 //TODO: Agregar mover elemento - similar a rename - complejo de implementar en el frontend
 
-//------------------------------------------------
+/////////////////////////////////////////////////////////////////////////////////
+
+

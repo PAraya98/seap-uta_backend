@@ -113,7 +113,7 @@ async function init_machine(model, id_father, direction, port_machine) //conside
                 else
                 {   content = await get_content(id_children);
                     if(content != undefined)
-                    {   await exec_ssh_command("echo '"+content+"' > "+direction.replace(/ /g, "\\ "), port_machine);
+                    {   await exec_ssh_command('echo "'+content.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/[\\$'"]/g, "\\$&")+'" > '+direction.replace(/ /g, "\\ "), port_machine);
                     }
                     else
                     {   await exec_ssh_command("echo '' > "+direction.replace(/ /g, "\\ "), port_machine);
@@ -144,7 +144,7 @@ async function update_file_ssh(id_element, path, port_machine)
 {   new Promise(async resolve => {
         content = await get_content(id_element);
         await get_content(id_element).then(content => {
-            var command = "cd ~ && echo '"+content+"' > "+path.replace(/ /g, "\\ ");
+            var command = 'cd ~ && echo "'+content.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/[\\$'"]/g, "\\$&")+'" > '+path.replace(/ /g, "\\ ");
             index = array_update_file.findIndex(update => update.id_element === id_element);
             if(index == -1) array_update_file.push({id_element: id_element, port_machine: port_machine, command: command});// push
             else
